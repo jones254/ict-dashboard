@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FX Dashboard — TA + ICT (Separate)</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lightweight Charts -->
+  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+
+  <!-- Luxon for timezone handling -->
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-gray-50 text-slate-800">
+  <div class="max-w-7xl mx-auto p-6">
+    <header class="mb-6">
+      <h1 class="text-3xl font-extrabold text-center">FX Multi-Dashboard — Technical & ICT</h1>
+      <p class="text-center text-sm text-slate-500 mt-1">Pure frontend — ready for GitHub Pages</p>
+    </header>
+
+    <!-- Controls -->
+    <div class="grid md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white p-4 rounded-xl shadow-sm">
+        <label class="block text-sm font-medium mb-2">Pair</label>
+        <select id="pairSelect" class="w-full p-2 border rounded"></select>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl shadow-sm">
+        <label class="block text-sm font-medium mb-2">Mode</label>
+        <select id="modeSelect" class="w-full p-2 border rounded">
+          <option value="single">Single pair (one analysis)</option>
+          <option value="multi">Multi-pair (dashboard shows multiple results)</option>
+        </select>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl shadow-sm flex items-end justify-between">
+        <div>
+          <label class="block text-sm text-slate-500">API Key</label>
+          <input id="apiKey" class="w-full p-2 border rounded" placeholder="Paste Polygon API key (public key exposes it)" />
+        </div>
+        <button id="runBtn" class="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow">Run</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bg-white rounded-xl shadow p-4 mb-6">
+      <nav class="flex gap-4">
+        <button class="tab-btn px-3 py-2 rounded" data-tab="overview">Overview</button>
+        <button class="tab-btn px-3 py-2 rounded" data-tab="ta">Technical Analysis</button>
+        <button class="tab-btn px-3 py-2 rounded" data-tab="ict">ICT / SMC Analysis</button>
+        <button class="tab-btn px-3 py-2 rounded" data-tab="charts">Charts</button>
+      </nav>
+    </div>
+
+    <!-- Tab Contents -->
+    <div id="tab-contents">
+      <section id="overview" class="tab-content">
+        <div id="overviewCards" class="grid md:grid-cols-3 gap-4"></div>
+      </section>
+
+      <section id="ta" class="tab-content hidden">
+        <div id="taResults" class="grid md:grid-cols-2 gap-4"></div>
+      </section>
+
+      <section id="ict" class="tab-content hidden">
+        <div id="ictResults" class="grid md:grid-cols-2 gap-4"></div>
+      </section>
+
+      <section id="charts" class="tab-content hidden">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-white rounded-xl p-4 shadow">
+            <h3 class="font-semibold mb-2">Candlestick Chart</h3>
+            <div id="chart" class="w-full h-[420px]"></div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow">
+            <h3 class="font-semibold mb-2">RSI (last 200)</h3>
+            <div id="rsiChart" class="w-full h-[200px]"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="mt-8 text-sm text-slate-500">
+      <p>Notes: GitHub Pages will host these static files. Placing your API key in the page exposes it publicly — see instructions below for safer options.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
