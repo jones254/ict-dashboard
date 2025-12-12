@@ -1,10 +1,5 @@
-.tab-btn { background: transparent; color: #334155; }
-.tab-btn.active { background: linear-gradient(90deg,#6366f1,#4f46e5); color: white; }
-
-.tab-content { transition: opacity .18s ease; }
-.hidden { display: none; }
-pre { background:#f8fafc; padding:12px; border-radius:8px; overflow:auto; }
-
-.card-title { font-weight:700; }
-.kv { font-weight:600; color:#0f172a; }
-.small-muted { font-size:12px; color:#475569; }
+/* style.css - small extras */
+body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+#chart, #rsiChart { width: 100%; }
+#confidenceBar { background: linear-gradient(90deg,#10b981,#06b6d4); transition: width 700ms ease; }
+.timeframe-badge { display:inline-block; padding:4px 8px; border-radius:999px; background:#f3f4f6; font-size:12px; color:#374151; }
