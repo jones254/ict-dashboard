@@ -3,93 +3,78 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FX Dashboard — TA + ICT (Separate)</title>
+  <title>FX ICT Multi-Timeframe — Analyzer</title>
 
-  <!-- Tailwind CDN -->
+  <!-- Tailwind (dev CDN ok for testing) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Lightweight Charts -->
-  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-
-  <!-- Luxon for timezone handling -->
-  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+  <!-- Lightweight Charts (correct production bundle) -->
+  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.production.min.js"></script>
 
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-gray-50 text-slate-800">
-  <div class="max-w-7xl mx-auto p-6">
-    <header class="mb-6">
-      <h1 class="text-3xl font-extrabold text-center">FX Multi-Dashboard — Technical & ICT</h1>
-      <p class="text-center text-sm text-slate-500 mt-1">Pure frontend — ready for GitHub Pages</p>
-    </header>
+<body class="bg-gray-100 text-gray-900">
+
+  <div class="max-w-6xl mx-auto p-6">
+
+    <h1 class="text-3xl md:text-4xl font-bold text-center mb-6">📊 FX ICT Multi-Timeframe Analyzer</h1>
 
     <!-- Controls -->
-    <div class="grid md:grid-cols-3 gap-4 mb-6">
-      <div class="bg-white p-4 rounded-xl shadow-sm">
-        <label class="block text-sm font-medium mb-2">Pair</label>
-        <select id="pairSelect" class="w-full p-2 border rounded"></select>
-      </div>
-
-      <div class="bg-white p-4 rounded-xl shadow-sm">
-        <label class="block text-sm font-medium mb-2">Mode</label>
-        <select id="modeSelect" class="w-full p-2 border rounded">
-          <option value="single">Single pair (one analysis)</option>
-          <option value="multi">Multi-pair (dashboard shows multiple results)</option>
-        </select>
-      </div>
-
-      <div class="bg-white p-4 rounded-xl shadow-sm flex items-end justify-between">
-        <div>
-          <label class="block text-sm text-slate-500">API Key</label>
-          <input id="apiKey" class="w-full p-2 border rounded" placeholder="Paste Polygon API key (public key exposes it)" />
+    <div class="bg-white rounded-xl shadow-md p-5 mb-6">
+      <div class="flex flex-col md:flex-row items-center gap-4">
+        <div class="flex items-center gap-3">
+          <label class="font-semibold">Pair</label>
+          <select id="pairSelect" class="px-3 py-2 border rounded-lg"></select>
         </div>
-        <button id="runBtn" class="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow">Run</button>
+
+        <div class="flex items-center gap-3">
+          <label class="font-semibold">Mode</label>
+          <select id="modeSelect" class="px-3 py-2 border rounded-lg">
+            <option value="standard">Standard</option>
+            <option value="conservative">Conservative</option>
+            <option value="aggressive">Aggressive</option>
+          </select>
+        </div>
+
+        <div class="ml-auto">
+          <button id="runBtn"
+                  class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            Run Analysis
+          </button>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 mt-3">Data: Polygon (weekly/daily) + TwelveData (4H,1H,15m). Intraday falls back to daily when missing.</p>
+    </div>
+
+    <!-- Results area -->
+    <div id="results" class="space-y-4 mb-6"></div>
+
+    <!-- Chart area -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white p-6 rounded-xl shadow">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-xl font-bold">Price Chart (most granular)</h2>
+          <div id="chartMeta" class="text-sm text-gray-600"></div>
+        </div>
+        <div id="chart" style="height:420px; min-width:300px;"></div>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="text-xl font-bold mb-3">RSI</h2>
+        <div id="rsiChart" style="height:200px; min-width:300px;"></div>
+
+        <h3 class="text-lg font-semibold mt-6 mb-2">Overall Confidence</h3>
+        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden mb-3">
+          <div id="confidenceBar" class="h-4 rounded-full" style="width:0%"></div>
+        </div>
+        <div id="confidenceText" class="text-sm text-gray-700">—</div>
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="bg-white rounded-xl shadow p-4 mb-6">
-      <nav class="flex gap-4">
-        <button class="tab-btn px-3 py-2 rounded" data-tab="overview">Overview</button>
-        <button class="tab-btn px-3 py-2 rounded" data-tab="ta">Technical Analysis</button>
-        <button class="tab-btn px-3 py-2 rounded" data-tab="ict">ICT / SMC Analysis</button>
-        <button class="tab-btn px-3 py-2 rounded" data-tab="charts">Charts</button>
-      </nav>
-    </div>
-
-    <!-- Tab Contents -->
-    <div id="tab-contents">
-      <section id="overview" class="tab-content">
-        <div id="overviewCards" class="grid md:grid-cols-3 gap-4"></div>
-      </section>
-
-      <section id="ta" class="tab-content hidden">
-        <div id="taResults" class="grid md:grid-cols-2 gap-4"></div>
-      </section>
-
-      <section id="ict" class="tab-content hidden">
-        <div id="ictResults" class="grid md:grid-cols-2 gap-4"></div>
-      </section>
-
-      <section id="charts" class="tab-content hidden">
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="bg-white rounded-xl p-4 shadow">
-            <h3 class="font-semibold mb-2">Candlestick Chart</h3>
-            <div id="chart" class="w-full h-[420px]"></div>
-          </div>
-          <div class="bg-white rounded-xl p-4 shadow">
-            <h3 class="font-semibold mb-2">RSI (last 200)</h3>
-            <div id="rsiChart" class="w-full h-[200px]"></div>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <footer class="mt-8 text-sm text-slate-500">
-      <p>Notes: GitHub Pages will host these static files. Placing your API key in the page exposes it publicly — see instructions below for safer options.</p>
-    </footer>
+    <footer class="text-xs text-gray-500 mt-6">Educational/analysis only. Not financial advice.</footer>
   </div>
 
+  <!-- Main script -->
   <script src="script.js"></script>
 </body>
 </html>
